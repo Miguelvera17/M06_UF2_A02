@@ -71,7 +71,7 @@ public class GestioDBGym {
         message = "==================";
         printScreen(terminal, message);
 
-        message = "CONSULTA BD HR";
+        message = "CONSULTA BD Gym";
         printScreen(terminal, message);
 
         message = "==================";
@@ -108,7 +108,7 @@ public class GestioDBGym {
 
         switch(opcio) {
             case 1:
-                String File_data_script = "db_scripts/DB_Data_HR.sql" ;
+                String File_data_script = "db_scripts/DB_Data_Gym.sql" ;
     
                 InputStream input_data = GestioDBGym.class.getClassLoader().getResourceAsStream(File_data_script);
 
@@ -161,11 +161,7 @@ public class GestioDBGym {
         while (DispOptions) {
 
             System.out.println("De quina taula vols mostrar els seus registres?");
-            System.out.println("1. Departaments");
-            System.out.println("2. Tasques");
-            System.out.println("3. Històric de tasques");
-            System.out.println("4. Empleats");
-            System.out.println("5. Sortir");
+            System.out.println("1. Personas");
 
             System.out.print("Introdueix l'opció tot seguit >> ");
 
@@ -173,19 +169,9 @@ public class GestioDBGym {
 
             switch(opcio) {
                 case 1:
-                    crudbgym.ReadAllDatabase(connection, "DEPARTMENTS");
+                    crudbgym.ReadAllDatabase(connection, "PERSONAS");
                     break;
                 case 2:
-                    crudbgym.ReadAllDatabase(connection, "JOBS");
-                    break;
-                case 3:
-                    crudbgym.ReadAllDatabase(connection, "JOB_HISTORY");
-                    break;
-                case 4:
-                    crudbgym.ReadAllDatabase(connection, "EMPLOYEES");
-                    break;
-                case 5:
-
                     DispOptions = false;
                     break;
                 default:
@@ -226,12 +212,6 @@ public class GestioDBGym {
                     int idDept = Integer.parseInt(br.readLine());
                     crudbgym.ReadDepartamentsId(connection, "DEPARTMENTS", idDept);
                     break;
-                case 2:
-                    System.out.println("Introdueix el salari mínim dins el rang >> ");
-                    float salMin = Float.parseFloat(br.readLine());
-                    System.out.println("Introdueix el salari màxim dins el rang >> ");
-                    float salMax = Float.parseFloat(br.readLine());
-                    crudbgym.ReadSalaries(connection, "EMPLOYEES", salMin,salMax);
             }
 
         }
@@ -274,14 +254,14 @@ public class GestioDBGym {
             String DNI = "";
 
             while (dadaValida) {
-                System.out.print("Introdueix la data d'incorporació de l'empleat (AAAA-MM-DD) >> ");
+                System.out.print("Introdueix DNI >> ");
 
                 try {
 
                     DNI = br.readLine();
 
-                    if (!DNI.matches("^(\\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$")) {
-                        System.out.println("Format de data no vàlid");
+                    if (DNI.length() != 9) {
+                        System.out.println("DNI no vàlid");
 
                     } else {
                         dadaValida = false;

@@ -62,28 +62,19 @@ public class CRUDGym {
     throws ConnectException, SQLException {
 
         String query = "INSERT INTO " + TableName 
-                    + " (EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_INT, HIRE_DATE,"
-                    + "JOB_ID, SALARY, COMMISSION_PCT, MANAGER_ID, DEPARTMENT_ID, BONUS)"
+                    + " (ID, DNI, name, phone)"
                     + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
 
-            prepstat.setInt(1, person.getEmployeeId());
-            prepstat.setString(2, person.getFirstName());
-            prepstat.setString(3, employee.getLastName());
-            prepstat.setString(4, employee.getEmail());
-            prepstat.setString(5, employee.getPhoneInt());
-            prepstat.setString(6, employee.getHireDate());
-            prepstat.setString(7, employee.getJobId());
-            prepstat.setFloat(8, employee.getSalary());
-            prepstat.setFloat(9, employee.getCommissionPct());
-            prepstat.setInt(10, employee.getManagerId());
-            prepstat.setInt(11, employee.getDepartmentId());
-            prepstat.setString(12, employee.getBonus());
+            prepstat.setInt(1, person.getID());
+            prepstat.setString(2, person.getDNI());
+            prepstat.setString(3, person.getName());
+            prepstat.setString(4, person.getPhone());
 
             prepstat.executeUpdate();
 
-            System.out.println("Empleat afegit amb èxit");
+            System.out.println("Persona afegit amb èxit");
         
         } catch (SQLException sqle) {
             if (!sqle.getMessage().contains("Duplicate entry")) {
@@ -120,7 +111,7 @@ public class CRUDGym {
     public void ReadDepartamentsId(Connection connection, String TableName, int id) 
     throws ConnectException, SQLException {
 
-        String query = "SELECT * FROM " + TableName + " WHERE department_id = ?";
+        String query = "SELECT * FROM " + TableName + " WHERE id = ?";
 
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
 
@@ -139,32 +130,6 @@ public class CRUDGym {
             System.err.println(sqle.getMessage());
         }
     }
-
-    public void ReadSalaries(Connection connection, String TableName, float salMin, float salMax) 
-    throws ConnectException, SQLException {
-
-        String query = "SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, SALARY FROM " 
-                     + TableName + " WHERE salary BETWEEN ? AND ?";
-
-        try (PreparedStatement prepstat = connection.prepareStatement(query)) {
-
-            prepstat.setFloat(1, salMin);
-            prepstat.setFloat(2, salMax);
-            ResultSet rset = prepstat.executeQuery();
-
-            int colNum = getColumnNames(rset);
-
-            //Si el nombre de columnes és >0 procedim a llegir i mostrar els registres
-            if (colNum > 0) {
-
-                recorrerRegistres(rset,colNum);
-
-            }
-        } catch (SQLException sqle) {
-            System.err.println(sqle.getMessage());
-        }
-    }
-
 
 //Aquest mètode auxiliar podria ser utileria del READ, mostra el nom de les columnes i quantes n'hi ha
     public static int getColumnNames(ResultSet rs) throws SQLException {
