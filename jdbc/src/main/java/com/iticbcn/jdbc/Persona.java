@@ -1,20 +1,27 @@
 package com.iticbcn.jdbc;
 
 public class Persona {
-    private int id;
-    private int DNI;
+    private int ID;
+    private String DNI;
     private String name;
     private String phone;
-    public int getId() {
-        return id;
+    
+    public Persona(int iD, String dNI, String name, String phone) {
+        ID = iD;
+        DNI = dNI;
+        this.name = name;
+        this.phone = phone;
     }
-    public void setId(int id) {
-        this.id = id;
+    public int getID() {
+        return ID;
     }
-    public int getDNI() {
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+    public String getDNI() {
         return DNI;
     }
-    public void setDNI(int dNI) {
+    public void setDNI(String dNI) {
         DNI = dNI;
     }
     public String getName() {
