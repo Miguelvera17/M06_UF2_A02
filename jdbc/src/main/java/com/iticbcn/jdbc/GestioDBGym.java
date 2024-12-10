@@ -36,7 +36,7 @@ public class GestioDBGym {
         
                         // Conectar amb MariaDB
                         try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
-                            System.out.println("Conexió exitosa");
+                            System.out.println("Conexión exitosa");
         
                             String File_create_script = "db_scripts/DB_Schema_Gym.sql" ;
         
@@ -53,7 +53,7 @@ public class GestioDBGym {
                         System.err.println("Error al conectar: " + e.getMessage());
                     }
                 } catch (Exception e) {
-                    System.err.println("Error al carregar fitxer de propietats: " + e.getMessage());
+                    System.err.println("Error al cargar fichero de propiedades: " + e.getMessage());
                 }
             } finally {}
             
@@ -78,26 +78,23 @@ public class GestioDBGym {
         printScreen(terminal, message);
 
 
-        message = "OPCIONS";
+        message = "OPCIONES";
         printScreen(terminal, message);
 
-        message = "1. CARREGAR TAULA";
+        message = "1. CARGAR TABLAS";
         printScreen(terminal, message);
 
-        message = "2. CONSULTAR TOTES LES DADES";
+        message = "2. INGRESAR UN NUEVO REGISTRO";
         printScreen(terminal, message);
 
-        message = "3. ALTRES CONSULTES";
+        message = "3. CONSULTAR TODOS LOS DATOS";
         printScreen(terminal, message);
 
-        message = "4. INSERIR NOU REGISTRE";
-        printScreen(terminal, message);
-
-        message = "9. SORTIR";
+        message = "4. SALIR";
         printScreen(terminal, message);
 
 
-        message = "Introdueix l'opcio tot seguit >> ";
+        message = "Introduce la opción >> ";
         for (char c : message.toCharArray()) {
             terminal.writer().print(c);
             terminal.flush();
@@ -113,32 +110,24 @@ public class GestioDBGym {
                 InputStream input_data = GestioDBGym.class.getClassLoader().getResourceAsStream(File_data_script);
 
                 if (crudbgym.CreateDatabase(connection,input_data) == true) {
-                    System.out.println("Registres duplicats");
+                    System.out.println("Registros duplicados");
                 } else {
-                    System.out.println("Registres inserits amb éxit");
+                    System.out.println("Registros ingresados con éxito");
                 }
 
                 break;
             case 2:
-                //Preguntem de quina taula volem mostrar
-                MenuSelect(br,crudbgym,connection);
-                break;
-
-            case 3:
-                MenuSelectAltres(br,crudbgym,connection);
-                break;
-
-            case 4:
                 MenuInsert(br,crudbgym,connection);
                 break;
-
-            case 9:
-                //sortim
-                System.out.println("Adéu!!");
+            case 3:
+                MenuSelect(br,crudbgym,connection);
+                break;
+            case 4:
+                System.out.println("Adios!!");
                 sortirapp = true;
                 break;
             default:
-                System.out.print("Opcio no vàlida");
+                System.out.print("Opción no válida");
                 MenuOptions(br,crudbgym,connection);
         }
     
@@ -153,6 +142,82 @@ public class GestioDBGym {
         System.out.println();
     }
 
+    public static void MenuInsert(BufferedReader br, CRUDGym crudbgym,Connection connection) 
+    throws SQLException, NumberFormatException, IOException {
+
+        boolean insertMore = true;
+
+        while (insertMore) {
+
+            boolean dadaValida = true;
+
+            System.out.println("\nIntroduce los datos de la nueva persona");
+
+            int ID = 0;
+
+            while (dadaValida) {
+                System.out.print("Cúal es el id (PK) de la persona? >> ");
+
+                try {
+
+                    ID = Integer.parseInt(br.readLine());
+
+                    if (ID <= 0) {
+                        System.out.println("Formato numérico no válido");
+
+                    } else {
+                        dadaValida = false;
+                    }
+                    
+                } catch (Exception e) {
+                    System.out.println("Formato numéric no válido");
+                }
+
+            }
+            dadaValida = true;
+            String DNI = "";
+
+            while (dadaValida) {
+                System.out.print("Introduce DNI >> ");
+
+                try {
+
+                    DNI = br.readLine();
+
+                    if (DNI.length() != 9) {
+                        System.out.println("DNI no válido");
+
+                    } else {
+                        dadaValida = false;
+                    }
+                    
+                } catch (Exception e) {
+                    System.out.println("Formato DNI no válido");
+                }
+            }
+
+            System.out.print("Introduce el nombre de la persona >> ");
+            String name = br.readLine();
+
+            System.out.print("Introduce el teléfono de la persona >> ");
+            String phone = br.readLine();
+
+            dadaValida = true;
+
+            Persona person = new Persona(ID, DNI, name, phone);
+
+            crudbgym.InsertEmployee(connection, "PERSONA", person);
+
+            System.out.println("Quieres agregar otra persona?");
+
+            if (!br.readLine().matches("[sS]")) {
+                insertMore = false;
+            }
+
+        }
+                            
+    }
+
     public static void MenuSelect(BufferedReader br, CRUDGym crudbgym,Connection connection) 
     throws SQLException, NumberFormatException, IOException {
 
@@ -160,30 +225,30 @@ public class GestioDBGym {
 
         while (DispOptions) {
 
-            System.out.println("De quina taula vols mostrar els seus registres?");
+            System.out.println("De que tabla desea mostrar los registros?");
             System.out.println("1. Personas");
 
-            System.out.print("Introdueix l'opció tot seguit >> ");
+            System.out.print("Introduce la opción >> ");
 
             opcio = Integer.parseInt(br.readLine());
 
             switch(opcio) {
                 case 1:
-                    crudbgym.ReadAllDatabase(connection, "PERSONAS");
+                    crudbgym.ReadAllDatabase(connection, "persona");
                     break;
                 case 2:
                     DispOptions = false;
                     break;
                 default:
-                    System.out.print("Opcio no vàlida");
+                    System.out.print("Opción no vàlida");
             }
                 
             if (DispOptions) {
-                System.out.println("Vols fer altra consulta? (S o N): ");
+                System.out.println("Quiere hacer otra consulta? (S o N): ");
                 String opcioB = br.readLine();
         
                 if (opcioB.equalsIgnoreCase("n")){
-                    System.out.println("No, no marxis si us plau!");
+                    System.out.println("Volviendo al menú...");
                     DispOptions = false;
                     break;
                 } 
@@ -198,7 +263,7 @@ public class GestioDBGym {
 
         while (DispOptions) {
 
-            System.out.println("Quina consulta vols fer?");
+            System.out.println("Qué consulta desea hacer?");
             System.out.println("1. Departament per id");
             System.out.println("2. Rang de salaris d'empleats");
 
@@ -217,81 +282,5 @@ public class GestioDBGym {
         }
 
     }
-
-    public static void MenuInsert(BufferedReader br, CRUDGym crudbgym,Connection connection) 
-    throws SQLException, NumberFormatException, IOException {
-
-        boolean insertMore = true;
-
-        while (insertMore) {
-
-            boolean dadaValida = true;
-
-            System.out.println("Introdueix els detalls del nou persona");
-
-            int ID = 0;
-
-            while (dadaValida) {
-                System.out.print("Quina és la id (PK) de l'persona? >> ");
-
-                try {
-
-                    ID = Integer.parseInt(br.readLine());
-
-                    if (ID <= 0) {
-                        System.out.println("Format numèric no vàlid");
-
-                    } else {
-                        dadaValida = false;
-                    }
-                    
-                } catch (Exception e) {
-                    System.out.println("Format numèric no vàlid");
-                }
-
-            }
-            
-            String DNI = "";
-
-            while (dadaValida) {
-                System.out.print("Introdueix DNI >> ");
-
-                try {
-
-                    DNI = br.readLine();
-
-                    if (DNI.length() != 9) {
-                        System.out.println("DNI no vàlid");
-
-                    } else {
-                        dadaValida = false;
-                    }
-                    
-                } catch (Exception e) {
-                    System.out.println("Format de data no vàlid");
-                }
-            }
-
-            System.out.print("Introdueix el nom de l'persona >> ");
-            String name = br.readLine();
-
-            System.out.print("Introdueix el telèfon de l'persona >> ");
-            String phone = br.readLine();
-
-            dadaValida = true;
-
-            Persona person = new Persona(ID, DNI, name, phone);
-
-            crudbgym.InsertEmployee(connection, "PERSONA", person);
-
-            System.out.println("Vols afegir un altre persona?");
-
-            if (!br.readLine().matches("[sS]")) {
-                insertMore = false;
-            }
-
-        }
-                            
-        }
 
 }
