@@ -85,22 +85,26 @@ public class CRUDGym {
 
     }
 
-//Read sense prepared statements, mostra tots els registres
-    public void ReadAllDatabase(Connection connection, String TableName) throws ConnectException, SQLException {
+    public void ReadAllDatabase(Connection connection, String TableName) throws ConnectException, SQLException, IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         try (Statement statement = connection.createStatement()) {
-            
-            String query = "SELECT * FROM " + TableName +  "LIMIT 10 , 1;";
-
-            ResultSet rset = statement.executeQuery(query);
-            
-            //obtenim numero de columnes i nom
-            int colNum = getColumnNames(rset);
-
-            //Si el nombre de columnes és >0 procedim a llegir i mostrar els registres
-            if (colNum > 0) {
-
-                recorrerRegistres(rset,colNum);
-
+            int n = 0;
+            int m = 10;
+            while(true) {
+                String query = "SELECT * FROM " + TableName +  " ORDER BY ID LIMIT " + m + " OFFSET " + n + ";";
+                ResultSet rset = statement.executeQuery(query);
+                int colNum = getColumnNames(rset);
+                if (colNum > 0) {
+                    recorrerRegistres(rset,colNum);
+                }            
+                System.out.println("Mostrar más?: [Si] [No]"); 
+                System.out.print(">>> ");
+                if (br.readLine().matches("[sS]")) {
+                    //n++;
+                    m++;
+                } else {
+                    break;
+                }
             }
         } catch (SQLException sqle) {
             System.err.println(sqle.getMessage());
@@ -119,7 +123,6 @@ public class CRUDGym {
 
             int colNum = getColumnNames(rset);
 
-            //Si el nombre de columnes és >0 procedim a llegir i mostrar els registres
             if (colNum > 0) {
 
                 recorrerRegistres(rset,colNum);
@@ -130,7 +133,6 @@ public class CRUDGym {
         }
     }
 
-//Aquest mètode auxiliar podria ser utileria del READ, mostra el nom de les columnes i quantes n'hi ha
     public static int getColumnNames(ResultSet rs) throws SQLException {
         
         int numberOfColumns = 0;
