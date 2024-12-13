@@ -1,22 +1,21 @@
 package com.iticbcn.jdbc;
 
 public class Persona {
-    private int ID;
+    private int id;
     private String DNI;
-    private String name;
-    private String phone;
+    private String nombre;
+    private String telefono;
     
-    public Persona(int iD, String dNI, String name, String phone) {
-        ID = iD;
+    public Persona(String dNI, String nombre, String telefono) {
         DNI = dNI;
-        this.name = name;
-        this.phone = phone;
+        this.nombre = nombre;
+        this.telefono = telefono;
     }
     public int getID() {
-        return ID;
+        return id;
     }
-    public void setID(int ID) {
-        this.ID = ID;
+    public void setID(int id) {
+        this.id = id;
     }
     public String getDNI() {
         return DNI;
@@ -25,15 +24,15 @@ public class Persona {
         DNI = dNI;
     }
     public String getName() {
-        return name;
+        return nombre;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String nombre) {
+        this.nombre = nombre;
     }
     public String getPhone() {
-        return phone;
+        return telefono;
     }
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhone(String telefono) {
+        this.telefono = telefono;
     }
 }

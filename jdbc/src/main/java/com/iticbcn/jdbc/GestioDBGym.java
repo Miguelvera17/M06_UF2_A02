@@ -153,28 +153,6 @@ public class GestioDBGym {
 
             System.out.println("\nIntroduce los datos de la nueva persona");
 
-            int ID = 0;
-
-            while (dadaValida) {
-                System.out.print("Cúal es el id (PK) de la persona? >> ");
-
-                try {
-
-                    ID = Integer.parseInt(br.readLine());
-
-                    if (ID <= 0) {
-                        System.out.println("Formato numérico no válido");
-
-                    } else {
-                        dadaValida = false;
-                    }
-                    
-                } catch (Exception e) {
-                    System.out.println("Formato numéric no válido");
-                }
-
-            }
-            dadaValida = true;
             String DNI = "";
 
             while (dadaValida) {
@@ -197,16 +175,16 @@ public class GestioDBGym {
             }
 
             System.out.print("Introduce el nombre de la persona >> ");
-            String name = br.readLine();
+            String nombre = br.readLine();
 
             System.out.print("Introduce el teléfono de la persona >> ");
-            String phone = br.readLine();
+            String telefono = br.readLine();
 
             dadaValida = true;
 
-            Persona person = new Persona(ID, DNI, name, phone);
+            Persona person = new Persona(DNI, nombre, telefono);
 
-            crudbgym.InsertEmployee(connection, "PERSONA", person);
+            crudbgym.InsertPerson(connection, "PERSONA", person);
 
             System.out.println("Quieres agregar otra persona?");
 

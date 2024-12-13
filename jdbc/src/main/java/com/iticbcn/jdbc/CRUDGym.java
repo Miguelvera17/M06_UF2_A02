@@ -58,29 +58,28 @@ public class CRUDGym {
         return dupRecord;
     }
 
-    public void InsertEmployee(Connection connection, String TableName, Persona person) 
+    public void InsertPerson(Connection connection, String TableName, Persona person) 
     throws ConnectException, SQLException {
 
         String query = "INSERT INTO " + TableName 
-                    + " (ID, DNI, name, phone)"
-                    + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+                    + " (DNI, nombre, telefono)"
+                    + " VALUES (?,?,?)";
 
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
 
-            prepstat.setInt(1, person.getID());
-            prepstat.setString(2, person.getDNI());
-            prepstat.setString(3, person.getName());
-            prepstat.setString(4, person.getPhone());
+            prepstat.setString(1, person.getDNI());
+            prepstat.setString(2, person.getName());
+            prepstat.setString(3, person.getPhone());
 
             prepstat.executeUpdate();
 
-            System.out.println("Persona afegit amb èxit");
+            System.out.println("Persona añadidad con éxito");
         
         } catch (SQLException sqle) {
             if (!sqle.getMessage().contains("Duplicate entry")) {
                 System.err.println(sqle.getMessage());
             } else {
-                System.out.println("Registre duplicat");
+                System.out.println("Registros duplicados");
             }
         }
 
@@ -90,7 +89,7 @@ public class CRUDGym {
     public void ReadAllDatabase(Connection connection, String TableName) throws ConnectException, SQLException {
         try (Statement statement = connection.createStatement()) {
             
-            String query = "SELECT * FROM " + TableName + ";";
+            String query = "SELECT * FROM " + TableName +  "LIMIT 10 , 1;";
 
             ResultSet rset = statement.executeQuery(query);
             
