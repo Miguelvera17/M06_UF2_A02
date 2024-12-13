@@ -7,11 +7,22 @@ import java.io.InputStreamReader;
 
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-
+import org.w3c.dom.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 
 public class GestioDBGym {
 //Com veurem, aquesta booleana controla si volem sortir de l'aplicació.
@@ -90,7 +101,10 @@ public class GestioDBGym {
         message = "3. CONSULTAR TODOS LOS DATOS";
         printScreen(terminal, message);
 
-        message = "4. SALIR";
+        message = "4. MOSTRAR EN FORMATO DOM";
+        printScreen(terminal, message);
+
+        message = "5. SALIR";
         printScreen(terminal, message);
 
 
@@ -123,6 +137,9 @@ public class GestioDBGym {
                 MenuSelect(br,crudbgym,connection);
                 break;
             case 4:
+                MostrarDOM(br,crudbgym,connection);
+                break;
+            case 5:
                 System.out.println("Adios!!");
                 sortirapp = true;
                 break;
@@ -259,6 +276,69 @@ public class GestioDBGym {
 
         }
 
+    }
+
+    public static void MostrarDOM(BufferedReader br, CRUDGym crudbgym,Connection connection) throws SQLException, NumberFormatException, IOException {
+        try {
+        // Preparar un document XML buit
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document doc = dBuilder.newDocument();
+
+        // Crear l'element arrel
+        Element rootElement = doc.createElement("Personas");
+        doc.appendChild(rootElement);
+
+        // Obtenir els registres de la base de dades
+        String query = "SELECT id, DNI, nombre, telefono FROM Persona";
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+
+        // Afegir registres al document XML
+        while (resultSet.next()) {
+            Element persona = doc.createElement("Persona");
+
+            // ID
+            Element id = doc.createElement("ID");
+            id.appendChild(doc.createTextNode(String.valueOf(resultSet.getInt("id"))));
+            persona.appendChild(id);
+
+            // DNI
+            Element dni = doc.createElement("DNI");
+            dni.appendChild(doc.createTextNode(resultSet.getString("DNI")));
+            persona.appendChild(dni);
+
+            // Nombre
+            Element nombre = doc.createElement("Nombre");
+            nombre.appendChild(doc.createTextNode(resultSet.getString("nombre")));
+            persona.appendChild(nombre);
+
+            // Teléfono
+            Element telefono = doc.createElement("Telefono");
+            telefono.appendChild(doc.createTextNode(resultSet.getString("telefono")));
+            persona.appendChild(telefono);
+
+            // Afegir l'element Persona a l'arrel
+            rootElement.appendChild(persona);
+        }
+
+        // Tancar recursos de la base de dades
+        resultSet.close();
+        statement.close();
+
+        // Mostrar el document XML per consola
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        DOMSource source = new DOMSource(doc);
+        StreamResult consoleResult = new StreamResult(System.out);
+        transformer.transform(source, consoleResult);
+
+        System.out.println("\nXML generat i mostrat correctament.");
+
+    } catch (ParserConfigurationException | TransformerException e) {
+        e.printStackTrace();
+    }
     }
 
 }
