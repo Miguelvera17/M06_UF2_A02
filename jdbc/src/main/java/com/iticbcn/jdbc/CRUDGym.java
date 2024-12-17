@@ -82,7 +82,6 @@ public class CRUDGym {
                 System.out.println("Registros duplicados");
             }
         }
-
     }
 
     public void ReadAllDatabase(Connection connection, String TableName) throws ConnectException, SQLException, IOException {
@@ -111,14 +110,36 @@ public class CRUDGym {
         }
     }
 
-    public void ReadDepartamentsId(Connection connection, String TableName, int id) 
+    public void BuscaID(Connection connection, int id) 
     throws ConnectException, SQLException {
 
-        String query = "SELECT * FROM " + TableName + " WHERE id = ?";
+        String query = "SELECT * FROM persona WHERE id = ?";
 
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
 
             prepstat.setInt(1, id);
+            ResultSet rset = prepstat.executeQuery();
+
+            int colNum = getColumnNames(rset);
+
+            if (colNum > 0) {
+
+                recorrerRegistres(rset,colNum);
+
+            }
+        } catch (SQLException sqle) {
+            System.err.println(sqle.getMessage());
+        }
+    }
+
+    public void BuscaLIKE(Connection connection, String nombre) 
+    throws ConnectException, SQLException {
+
+        String query = "SELECT * FROM persona WHERE nombre lIKE ?";
+
+        try (PreparedStatement prepstat = connection.prepareStatement(query)) {
+
+            prepstat.setString(1, "%" + nombre + "%");
             ResultSet rset = prepstat.executeQuery();
 
             int colNum = getColumnNames(rset);

@@ -1,6 +1,8 @@
 package com.iticbcn.jdbc;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -98,17 +100,19 @@ public class GestioDBGym {
         message = "2. INGRESAR UN NUEVO REGISTRO";
         printScreen(terminal, message);
 
-        message = "3. CONSULTAR TODOS LOS DATOS";
+        message = "3. CONSULTAR DATOS ORDENADOS";
         printScreen(terminal, message);
 
         message = "4. MOSTRAR EN FORMATO DOM";
         printScreen(terminal, message);
 
-        message = "5. SALIR";
+        message = "5. MOSTRAR REGISTRO POR ID";
         printScreen(terminal, message);
 
+        message = "6. SALIR";
+        printScreen(terminal, message);
 
-        message = "Introduce la opción >> ";
+        message = "Introduce la opcion >> ";
         for (char c : message.toCharArray()) {
             terminal.writer().print(c);
             terminal.flush();
@@ -140,6 +144,9 @@ public class GestioDBGym {
                 MostrarDOM(br,crudbgym,connection);
                 break;
             case 5:
+                MenuSelectAltres(br, crudbgym, connection);
+                break;
+            case 6:
                 System.out.println("Adios!!");
                 sortirapp = true;
                 break;
@@ -259,8 +266,8 @@ public class GestioDBGym {
         while (DispOptions) {
 
             System.out.println("Qué consulta desea hacer?");
-            System.out.println("1. Departament per id");
-            System.out.println("2. Rang de salaris d'empleats");
+            System.out.println("1. Buscar persona por id");
+            System.out.println("2. Buscar persona por nombre(LIKE)");
 
             System.out.print("Introdueix l'opció tot seguit >> ");
 
@@ -268,9 +275,14 @@ public class GestioDBGym {
 
             switch(opcio) {
                 case 1:
-                    System.out.println("Introdueix la id del departament >> ");
-                    int idDept = Integer.parseInt(br.readLine());
-                    crudbgym.ReadDepartamentsId(connection, "DEPARTMENTS", idDept);
+                    System.out.println("Introduce el id de la persona >> ");
+                    int id = Integer.parseInt(br.readLine());
+                    crudbgym.BuscaID(connection, id);
+                    break;
+                case 2:
+                    System.out.println("Introduce el nombre de la persona >> ");
+                    String nombre = br.readLine();
+                    crudbgym.BuscaLIKE(connection, nombre);
                     break;
             }
 
@@ -278,67 +290,70 @@ public class GestioDBGym {
 
     }
 
-    public static void MostrarDOM(BufferedReader br, CRUDGym crudbgym,Connection connection) throws SQLException, NumberFormatException, IOException {
+    public static void MostrarDOM(BufferedReader br, CRUDGym crudbgym, Connection connection) 
+        throws SQLException, NumberFormatException, IOException {
+    
+        BufferedReader sbr = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("\nIndicate the name of the XML file (without extension):");
+        System.out.print("\n----> ");
+        String name = sbr.readLine();
+        System.out.print("\n");
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
         try {
-        // Preparar un document XML buit
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.newDocument();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            DOMImplementation implementation = builder.getDOMImplementation();
+            Document document = implementation.createDocument(null, "Personas", null);
+            document.setXmlVersion("1.0");
 
-        // Crear l'element arrel
-        Element rootElement = doc.createElement("Personas");
-        doc.appendChild(rootElement);
+            Element rootElement = document.getDocumentElement();
 
-        // Obtenir els registres de la base de dades
-        String query = "SELECT id, DNI, nombre, telefono FROM Persona";
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(query);
+            String query = "SELECT id, DNI, nombre, telefono FROM Persona";
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
 
-        // Afegir registres al document XML
-        while (resultSet.next()) {
-            Element persona = doc.createElement("Persona");
+            while (resultSet.next()) {
+                Element persona = document.createElement("Persona");
 
-            // ID
-            Element id = doc.createElement("ID");
-            id.appendChild(doc.createTextNode(String.valueOf(resultSet.getInt("id"))));
-            persona.appendChild(id);
+                Element id = document.createElement("ID");
+                id.appendChild(document.createTextNode(String.valueOf(resultSet.getInt("id"))));
+                persona.appendChild(id);
 
-            // DNI
-            Element dni = doc.createElement("DNI");
-            dni.appendChild(doc.createTextNode(resultSet.getString("DNI")));
-            persona.appendChild(dni);
+                Element dni = document.createElement("DNI");
+                dni.appendChild(document.createTextNode(resultSet.getString("DNI")));
+                persona.appendChild(dni);
 
-            // Nombre
-            Element nombre = doc.createElement("Nombre");
-            nombre.appendChild(doc.createTextNode(resultSet.getString("nombre")));
-            persona.appendChild(nombre);
+                Element nombre = document.createElement("Nombre");
+                nombre.appendChild(document.createTextNode(resultSet.getString("nombre")));
+                persona.appendChild(nombre);
 
-            // Teléfono
-            Element telefono = doc.createElement("Telefono");
-            telefono.appendChild(doc.createTextNode(resultSet.getString("telefono")));
-            persona.appendChild(telefono);
+                Element telefono = document.createElement("Telefono");
+                telefono.appendChild(document.createTextNode(resultSet.getString("telefono")));
+                persona.appendChild(telefono);
 
-            // Afegir l'element Persona a l'arrel
-            rootElement.appendChild(persona);
+                rootElement.appendChild(persona);
+            }
+
+            resultSet.close();
+            statement.close();
+
+            String fileName = "jdbc\\src\\main\\resources\\XML\\" + name + ".xml";
+            DOMSource source = new DOMSource(document);
+            StreamResult result = new StreamResult(new FileWriter(fileName));
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "4");
+
+            transformer.transform(source, result);
+
+            System.out.println("XML generado: " + fileName);
+
+        } catch (IOException e) {
+            System.err.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
         }
-
-        // Tancar recursos de la base de dades
-        resultSet.close();
-        statement.close();
-
-        // Mostrar el document XML per consola
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        DOMSource source = new DOMSource(doc);
-        StreamResult consoleResult = new StreamResult(System.out);
-        transformer.transform(source, consoleResult);
-
-        System.out.println("\nXML generat i mostrat correctament.");
-
-    } catch (ParserConfigurationException | TransformerException e) {
-        e.printStackTrace();
     }
-    }
-
 }
