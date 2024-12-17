@@ -106,10 +106,16 @@ public class GestioDBGym {
         message = "4. MOSTRAR EN FORMATO DOM";
         printScreen(terminal, message);
 
-        message = "5. MOSTRAR REGISTRO POR ID";
+        message = "5. BUSCAR REGISTRO";
         printScreen(terminal, message);
 
-        message = "6. SALIR";
+        message = "6. MODIFICAR REGISTRO";
+        printScreen(terminal, message);
+        
+        message = "7. BORRAR REGISTRO";
+        printScreen(terminal, message);
+
+        message = "8. SALIR";
         printScreen(terminal, message);
 
         message = "Introduce la opcion >> ";
@@ -147,6 +153,12 @@ public class GestioDBGym {
                 MenuSelectAltres(br, crudbgym, connection);
                 break;
             case 6:
+                MenuUpdate(br, crudbgym, connection);
+                break;
+            case 7:
+                MenuSelectAltres(br, crudbgym, connection);
+                break;
+            case 8:
                 System.out.println("Adios!!");
                 sortirapp = true;
                 break;
@@ -268,6 +280,7 @@ public class GestioDBGym {
             System.out.println("Qué consulta desea hacer?");
             System.out.println("1. Buscar persona por id");
             System.out.println("2. Buscar persona por nombre(LIKE)");
+            System.out.println("3. Salir");
 
             System.out.print("Introdueix l'opció tot seguit >> ");
 
@@ -275,15 +288,20 @@ public class GestioDBGym {
 
             switch(opcio) {
                 case 1:
-                    System.out.println("Introduce el id de la persona >> ");
+                    System.out.print("Introduce el id de la persona >> ");
                     int id = Integer.parseInt(br.readLine());
                     crudbgym.BuscaID(connection, id);
                     break;
                 case 2:
-                    System.out.println("Introduce el nombre de la persona >> ");
+                    System.out.print("Introduce el nombre de la persona >> ");
                     String nombre = br.readLine();
                     crudbgym.BuscaLIKE(connection, nombre);
                     break;
+                case 3:
+                    break;
+                default:
+                    System.out.print("Opción no válida");
+                    MenuSelectAltres(br, crudbgym, connection);
             }
 
         }
@@ -338,7 +356,7 @@ public class GestioDBGym {
             resultSet.close();
             statement.close();
 
-            String fileName = "jdbc\\src\\main\\resources\\XML\\" + name + ".xml";
+            String fileName = name + ".xml";
             DOMSource source = new DOMSource(document);
             StreamResult result = new StreamResult(new FileWriter(fileName));
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -354,6 +372,43 @@ public class GestioDBGym {
             System.err.println("Error: " + e.getMessage());
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
+        }
+    }
+
+    public static void MenuUpdate(BufferedReader br, CRUDGym crudbgym, Connection connection) 
+        throws SQLException, NumberFormatException, IOException {
+
+            int opcio = 0;
+
+        while (DispOptions) {
+
+            System.out.println("Qué campo desea actualizar?");
+            System.out.println("1. Nombre");
+            System.out.println("2. Telefono");
+            System.out.println("3. Salir");
+
+            System.out.print("Introduce la opcion >> ");
+
+            opcio = Integer.parseInt(br.readLine());
+
+            switch(opcio) {
+                case 1:
+                    System.out.print("Introduce el nuevo nombre >> ");
+                    int id = Integer.parseInt(br.readLine());
+                    crudbgym.update(connection,nombre, id, );
+                    break;
+                case 2:
+                    System.out.print("Introduce el nuevo telefono >> ");
+                    String nombre = br.readLine();
+                    crudbgym.update(connection, nombre);
+                    break;
+                case 3:
+                    break;
+                default:
+                    System.out.print("Opción no válida");
+                    MenuSelectAltres(br, crudbgym, connection);
+            }
+
         }
     }
 }

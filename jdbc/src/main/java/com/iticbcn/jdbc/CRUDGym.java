@@ -154,6 +154,28 @@ public class CRUDGym {
         }
     }
 
+    public void update(Connection connection, String campo, String id, String valor) 
+    throws ConnectException, SQLException {
+
+        String query = "UPDATE persona SET " + campo + " = " + valor + "WHERE id = ?;";
+
+        try (PreparedStatement prepstat = connection.prepareStatement(query)) {
+
+            prepstat.setString(1, id);
+            ResultSet rset = prepstat.executeQuery();
+
+            int colNum = getColumnNames(rset);
+
+            if (colNum > 0) {
+
+                recorrerRegistres(rset,colNum);
+
+            }
+        } catch (SQLException sqle) {
+            System.err.println(sqle.getMessage());
+        }
+    }
+
     public static int getColumnNames(ResultSet rs) throws SQLException {
         
         int numberOfColumns = 0;
