@@ -156,7 +156,7 @@ public class GestioDBGym {
                 MenuUpdate(br, crudbgym, connection);
                 break;
             case 7:
-                MenuSelectAltres(br, crudbgym, connection);
+                MenuDelete(br, crudbgym, connection);
                 break;
             case 8:
                 System.out.println("Adios!!");
@@ -290,12 +290,12 @@ public class GestioDBGym {
                 case 1:
                     System.out.print("Introduce el id de la persona >> ");
                     int id = Integer.parseInt(br.readLine());
-                    crudbgym.BuscaID(connection, id);
+                    crudbgym.searchID(connection, id);
                     break;
                 case 2:
                     System.out.print("Introduce el nombre de la persona >> ");
                     String nombre = br.readLine();
-                    crudbgym.BuscaLIKE(connection, nombre);
+                    crudbgym.searchLike(connection, nombre);
                     break;
                 case 3:
                     break;
@@ -376,39 +376,54 @@ public class GestioDBGym {
     }
 
     public static void MenuUpdate(BufferedReader br, CRUDGym crudbgym, Connection connection) 
-        throws SQLException, NumberFormatException, IOException {
-
+        throws SQLException, NumberFormatException, IOException, InterruptedException {
+            int id = 0;
             int opcio = 0;
-
+            String valor;
         while (DispOptions) {
 
-            System.out.println("Qué campo desea actualizar?");
+            System.out.println("\nQué campo desea actualizar?");
             System.out.println("1. Nombre");
             System.out.println("2. Telefono");
             System.out.println("3. Salir");
-
-            System.out.print("Introduce la opcion >> ");
-
+            System.out.print("\nIntroduce la opcion >> ");
             opcio = Integer.parseInt(br.readLine());
 
+            
             switch(opcio) {
                 case 1:
-                    System.out.print("Introduce el nuevo nombre >> ");
-                    int id = Integer.parseInt(br.readLine());
-                    crudbgym.update(connection,nombre, id, );
+                    System.out.print("\nIntroduce el id de la persona >> ");
+                    id = Integer.parseInt(br.readLine());
+                    System.out.print("\nIntroduce el nuevo nombre >> ");
+                    valor = br.readLine();
+                    crudbgym.update(connection,"nombre", id, valor);
                     break;
                 case 2:
-                    System.out.print("Introduce el nuevo telefono >> ");
-                    String nombre = br.readLine();
-                    crudbgym.update(connection, nombre);
+                    System.out.print("\nIntroduce el id de la persona >> ");
+                    id = Integer.parseInt(br.readLine());
+                    System.out.print("\nIntroduce el nuevo telefono (omitir +34)>> ");
+                    valor = "+34 " + br.readLine();
+                    crudbgym.update(connection, "telefono", id, valor);
                     break;
                 case 3:
+                    MenuOptions(br,crudbgym,connection);
                     break;
                 default:
                     System.out.print("Opción no válida");
-                    MenuSelectAltres(br, crudbgym, connection);
+                    MenuUpdate(br, crudbgym, connection);
             }
 
+        }
+    }
+
+    public static void MenuDelete(BufferedReader br, CRUDGym crudbgym, Connection connection) 
+        throws SQLException, NumberFormatException, IOException, InterruptedException {
+
+        while (DispOptions) {
+
+            System.out.print("\nIndique el id del registro a borrar >> ");
+            int id = Integer.parseInt(br.readLine());
+            crudbgym.delete(connection, id);
         }
     }
 }

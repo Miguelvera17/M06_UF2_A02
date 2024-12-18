@@ -110,7 +110,7 @@ public class CRUDGym {
         }
     }
 
-    public void BuscaID(Connection connection, int id) 
+    public void searchID(Connection connection, int id) 
     throws ConnectException, SQLException {
 
         String query = "SELECT * FROM persona WHERE id = ?";
@@ -132,7 +132,7 @@ public class CRUDGym {
         }
     }
 
-    public void BuscaLIKE(Connection connection, String nombre) 
+    public void searchLike(Connection connection, String nombre) 
     throws ConnectException, SQLException {
 
         String query = "SELECT * FROM persona WHERE nombre lIKE ?";
@@ -154,22 +154,50 @@ public class CRUDGym {
         }
     }
 
-    public void update(Connection connection, String campo, String id, String valor) 
+    public void update(Connection connection, String campo, int id, String valor) 
     throws ConnectException, SQLException {
 
-        String query = "UPDATE persona SET " + campo + " = " + valor + "WHERE id = ?;";
+        String query = "UPDATE persona SET " + campo + " = " + "'" + valor  + "'" + " WHERE id = ?";
 
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
 
-            prepstat.setString(1, id);
+            prepstat.setInt(1, id);
             ResultSet rset = prepstat.executeQuery();
 
             int colNum = getColumnNames(rset);
 
             if (colNum > 0) {
-
                 recorrerRegistres(rset,colNum);
+            }
+            int rowsUpdated = prepstat.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("La actualización fue exitosa.");
+            } else {
+                System.out.println("Error, verifica los datos");
+            }
+        } catch (SQLException sqle) {
+            System.err.println(sqle.getMessage());
+        }
+    }
 
+    public void delete(Connection connection, int id) 
+    throws ConnectException, SQLException {
+
+        String query = "DELETE FROM persona WHERE id = ?";
+
+        try (PreparedStatement prepstat = connection.prepareStatement(query)) {
+
+            prepstat.setInt(1, id);
+            ResultSet rset = prepstat.executeQuery();
+
+            int colNum = getColumnNames(rset);
+
+            if (colNum > 0) {
+                recorrerRegistres(rset,colNum);
+            }
+            int rowsDeleted = prepstat.executeUpdate();
+            if (rowsDeleted > 0) {
+                System.out.println("Registro borrado con exito");
             }
         } catch (SQLException sqle) {
             System.err.println(sqle.getMessage());
