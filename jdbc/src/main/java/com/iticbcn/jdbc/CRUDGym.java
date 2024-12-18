@@ -195,10 +195,6 @@ public class CRUDGym {
             if (colNum > 0) {
                 recorrerRegistres(rset,colNum);
             }
-            int rowsDeleted = prepstat.executeUpdate();
-            if (rowsDeleted > 0) {
-                System.out.println("Registro borrado con exito");
-            }
         } catch (SQLException sqle) {
             System.err.println(sqle.getMessage());
         }

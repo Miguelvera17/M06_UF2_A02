@@ -271,7 +271,7 @@ public class GestioDBGym {
     }
 
     public static void MenuSelectAltres(BufferedReader br, CRUDGym crudbgym,Connection connection) 
-    throws SQLException, NumberFormatException, IOException {
+    throws SQLException, NumberFormatException, IOException, InterruptedException {
 
         int opcio = 0;
 
@@ -298,6 +298,7 @@ public class GestioDBGym {
                     crudbgym.searchLike(connection, nombre);
                     break;
                 case 3:
+                    MenuOptions(br, crudbgym, connection);
                     break;
                 default:
                     System.out.print("Opción no válida");
