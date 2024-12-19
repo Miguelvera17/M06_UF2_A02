@@ -1,12 +1,10 @@
 package com.iticbcn.jdbc;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.w3c.dom.*;
@@ -20,10 +18,8 @@ import java.sql.Statement;
 import java.util.Properties;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 
 public class GestioDBGym {
@@ -241,6 +237,8 @@ public class GestioDBGym {
 
             System.out.println("De que tabla desea mostrar los registros?");
             System.out.println("1. Personas");
+            System.out.println("2. Gimnasio");
+
 
             System.out.print("Introduce la opción >> ");
 
@@ -251,6 +249,9 @@ public class GestioDBGym {
                     crudbgym.ReadAllDatabase(connection, "persona");
                     break;
                 case 2:
+                    crudbgym.ReadAllDatabase(connection, "gimnasio");
+                    break; 
+                case 3:
                     DispOptions = false;
                     break;
                 default:
@@ -313,7 +314,7 @@ public class GestioDBGym {
         throws SQLException, NumberFormatException, IOException {
     
         BufferedReader sbr = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("\nIndicate the name of the XML file (without extension):");
+        System.out.println("\nIndica el nombre del archivo XML (sin extension):");
         System.out.print("\n----> ");
         String name = sbr.readLine();
         System.out.print("\n");

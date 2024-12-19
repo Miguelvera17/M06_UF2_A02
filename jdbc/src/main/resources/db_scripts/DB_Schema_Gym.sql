@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS socio (
   PRIMARY KEY (id),
   KEY FK_socio_gimnasio (id_gimnasio),
   KEY FK_socio_persona (id_persona) USING BTREE,
-  CONSTRAINT FK_socio_gimnasio FOREIGN KEY (id_gimnasio) REFERENCES gimnasio (id) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT FK_socio_persona FOREIGN KEY (id_persona) REFERENCES persona (id) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT FK_socio_gimnasio FOREIGN KEY (id_gimnasio) REFERENCES gimnasio (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT FK_socio_persona FOREIGN KEY (id_persona) REFERENCES persona (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 CREATE TABLE IF NOT EXISTS entrenador (
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS entrenador (
   id_persona int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   KEY FK_entrenador_persona (id_persona) USING BTREE,
-  CONSTRAINT FK_entrenador_persona FOREIGN KEY (id_persona) REFERENCES persona (id) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT FK_entrenador_persona FOREIGN KEY (id_persona) REFERENCES persona (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 CREATE TABLE IF NOT EXISTS clase (
