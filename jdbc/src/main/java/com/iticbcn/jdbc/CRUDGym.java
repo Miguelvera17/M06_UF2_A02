@@ -181,16 +181,9 @@ public class CRUDGym {
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
 
             prepstat.setInt(1, id);
-            ResultSet rset = prepstat.executeQuery();
-
-            //Fem el commit            
-            connection.commit();
-            int colNum = getColumnNames(rset);
-
-            if (colNum > 0) {
-                recorrerRegistres(rset,colNum);
-            }
+            
             int rowsUpdated = prepstat.executeUpdate();
+
             if (rowsUpdated > 0) {
                 System.out.println("La actualización fue exitosa.");
                 //deixem l'autocommit com estava
@@ -218,16 +211,33 @@ public class CRUDGym {
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
 
             prepstat.setInt(1, id);
-            ResultSet rset = prepstat.executeQuery();
-            //Fem el commit            
-            connection.commit();
-            int colNum = getColumnNames(rset);
+            
+            int rowsUpdated = prepstat.executeUpdate();
 
-            if (colNum > 0) {
-                recorrerRegistres(rset,colNum);
+            if (rowsUpdated > 0) {
+                System.out.println("Se borro con exito.");
+                //deixem l'autocommit com estava
+                connection.setAutoCommit(autocommitvalue);
+            } else {
+                System.out.println("Error, verifica los datos");
+                connection.rollback();
             }
             //deixem l'autocommit com estava
             connection.setAutoCommit(autocommitvalue);
+        } catch (SQLException sqle) {
+            System.err.println(sqle.getMessage());
+            connection.rollback();
+        }
+    }
+
+    public void count(Connection connection, int id) 
+    throws ConnectException, SQLException {
+
+        String query = "SELECT COUNT(*) FROM persona;";
+
+        try (PreparedStatement prepstat = connection.prepareStatement(query)) {
+
+            prepstat.setInt(1, id);
         } catch (SQLException sqle) {
             System.err.println(sqle.getMessage());
             connection.rollback();
