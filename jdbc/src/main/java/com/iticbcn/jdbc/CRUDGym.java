@@ -65,6 +65,12 @@ public class CRUDGym {
                     + " (DNI, nombre, telefono)"
                     + " VALUES (?,?,?)";
 
+        //Recuperem valor inicial de l'autocommit
+        boolean autocommitvalue = connection.getAutoCommit();     
+
+        //En aquest punt desactivem el commit automàtic.
+        connection.setAutoCommit(false);
+
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
 
             prepstat.setString(1, person.getDNI());
@@ -73,13 +79,21 @@ public class CRUDGym {
 
             prepstat.executeUpdate();
 
+            //Fem el commit            
+            connection.commit();
+
             System.out.println("Persona añadidad con éxito");
+
+            //deixem l'autocommit com estava
+            connection.setAutoCommit(autocommitvalue);
         
         } catch (SQLException sqle) {
             if (!sqle.getMessage().contains("Duplicate entry")) {
                 System.err.println(sqle.getMessage());
+                connection.rollback();
             } else {
                 System.out.println("Registros duplicados");
+                connection.rollback();
             }
         }
     }
@@ -158,12 +172,19 @@ public class CRUDGym {
     throws ConnectException, SQLException {
 
         String query = "UPDATE persona SET " + campo + " = " + "'" + valor  + "'" + " WHERE id = ?";
+        //Recuperem valor inicial de l'autocommit
+        boolean autocommitvalue = connection.getAutoCommit();     
+
+        //En aquest punt desactivem el commit automàtic.
+        connection.setAutoCommit(false);
 
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
 
             prepstat.setInt(1, id);
             ResultSet rset = prepstat.executeQuery();
 
+            //Fem el commit            
+            connection.commit();
             int colNum = getColumnNames(rset);
 
             if (colNum > 0) {
@@ -172,11 +193,15 @@ public class CRUDGym {
             int rowsUpdated = prepstat.executeUpdate();
             if (rowsUpdated > 0) {
                 System.out.println("La actualización fue exitosa.");
+                //deixem l'autocommit com estava
+                connection.setAutoCommit(autocommitvalue);
             } else {
                 System.out.println("Error, verifica los datos");
+                connection.rollback();
             }
         } catch (SQLException sqle) {
             System.err.println(sqle.getMessage());
+            connection.rollback();
         }
     }
 
@@ -184,19 +209,28 @@ public class CRUDGym {
     throws ConnectException, SQLException {
 
         String query = "DELETE FROM persona WHERE id = ?";
+        //Recuperem valor inicial de l'autocommit
+        boolean autocommitvalue = connection.getAutoCommit();     
+
+        //En aquest punt desactivem el commit automàtic.
+        connection.setAutoCommit(false);
 
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
 
             prepstat.setInt(1, id);
             ResultSet rset = prepstat.executeQuery();
-
+            //Fem el commit            
+            connection.commit();
             int colNum = getColumnNames(rset);
 
             if (colNum > 0) {
                 recorrerRegistres(rset,colNum);
             }
+            //deixem l'autocommit com estava
+            connection.setAutoCommit(autocommitvalue);
         } catch (SQLException sqle) {
             System.err.println(sqle.getMessage());
+            connection.rollback();
         }
     }
 
